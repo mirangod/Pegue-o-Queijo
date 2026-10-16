@@ -33,6 +33,8 @@ public class Rat : MonoBehaviour
     public void Jump()
     {
         Debug.Log("Jumping");
+        // fazer função para pular e parar dee se mover enquanto estiver no ar
+        rig.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
 
     public void StopMoving()

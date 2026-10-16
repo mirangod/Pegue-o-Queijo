@@ -36,22 +36,6 @@ public class MobileControls : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        switch (player.name)
-        {
-            case "Felix":
-                player.GetComponent<Felix>().StopMoving();
-                break;
-            case "Luna":
-                //player.GetComponent<Luna>().StopMoving();
-                break;
-            case "Bandit":
-                //player.GetComponent<Bandit>().StopMoving();
-                break;
-            default:
-                Debug.Log("Player não encontrado");
-                break;
-        }
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Rat>().StopMoving();
     }
 }
