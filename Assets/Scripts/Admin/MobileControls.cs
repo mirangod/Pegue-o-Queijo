@@ -29,13 +29,22 @@ public class MobileControls : MonoBehaviour, IPointerDownHandler, IPointerUpHand
                 rat.MoveRight();
                 break;
             case "Jump Button":
-                rat.Jump();
+                rat.StartJumpHold();
                 break;
         }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        GameObject.FindGameObjectWithTag("Player").GetComponent<Rat>().StopMoving();
+        switch (gameObject.name)
+        {
+            case "Left Button":
+            case "Right Button":
+                rat.StopMoving();
+                break;
+            case "Jump Button":
+                rat.StopJumpHold();
+                break;
+        }
     }
 }
