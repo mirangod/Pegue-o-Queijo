@@ -10,6 +10,11 @@ public class Rat : MonoBehaviour
     public float jumpForce;
 
     public float move;
+    private float _move;
+
+    public Transform feet;
+    public bool isGrounded;
+    public LayerMask groundLayer;
 
     protected virtual void Awake()
     {
