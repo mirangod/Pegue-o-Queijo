@@ -12,6 +12,7 @@ public class SelecaoDeFase : MonoBehaviour
     [SerializeField] private GameObject painelDeFase;
     [SerializeField] private TMP_Text textoDaFase;
     [SerializeField] private Button botaoJogar;
+    [SerializeField] private Button botaoFechar;
 
     private static string cenaSelecionada;
 
