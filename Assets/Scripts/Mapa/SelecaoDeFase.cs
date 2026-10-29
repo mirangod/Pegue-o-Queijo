@@ -65,6 +65,7 @@ public class SelecaoDeFase : MonoBehaviour
 
     private void OnMouseDown()
     {
+        Debug.Log($"Fase '{nomeDaFase}' selecionada.", this);
         AoSelecionarFase();
     }
 }
