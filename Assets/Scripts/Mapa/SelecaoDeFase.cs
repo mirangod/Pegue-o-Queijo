@@ -22,6 +22,8 @@ public class SelecaoDeFase : MonoBehaviour
             painelDeFase.SetActive(false);
         if (botaoJogar != null)
             botaoJogar.onClick.AddListener(IniciarFaseSelecionada);
+        if (botaoFechar != null)
+            botaoFechar.onClick.AddListener(FecharPainel);
     }
 
     public void AoSelecionarFase()
@@ -33,13 +35,32 @@ public class SelecaoDeFase : MonoBehaviour
         if (textoDaFase != null)
             textoDaFase.text = nomeDaFase;
         if (painelDeFase != null)
+        {
             painelDeFase.SetActive(true);
+            if (GameObject.FindGameObjectWithTag("Arrastar") != null)
+            {
+                GameObject.FindGameObjectWithTag("Arrastar").GetComponent<MapaArrastavel>().canMove = false;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Configure o painel de fase para a fase '{nomeDaFase}'.", this);
+        }
     }
 
     public void FecharPainel()
     {
         if (painelDeFase != null)
             painelDeFase.SetActive(false);
+
+        if (GameObject.FindGameObjectWithTag("Arrastar") != null)
+        {
+            GameObject.FindGameObjectWithTag("Arrastar").GetComponent<MapaArrastavel>().canMove = true;
+        }
+        else
+        {
+            Debug.LogWarning($"Configure o painel de fase para a fase '{nomeDaFase}'.", this);
+        }
     }
 
     public void IniciarFaseSelecionada()

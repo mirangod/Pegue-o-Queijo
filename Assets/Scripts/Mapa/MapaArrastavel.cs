@@ -7,6 +7,7 @@ public class MapaArrastavel : MonoBehaviour
     [SerializeField] private Camera cameraDoMapa;
     [SerializeField] private Vector2 limiteMinimo = new Vector2(-10f, -10f);
     [SerializeField] private Vector2 limiteMaximo = new Vector2(10f, 10f);
+    public bool canMove = true;
 
     private Vector2 ultimaPosicaoDoPonteiro;
     private bool arrastando;
@@ -19,7 +20,7 @@ public class MapaArrastavel : MonoBehaviour
 
     private void Update()
     {
-        if (cameraDoMapa == null)
+        if (cameraDoMapa == null || canMove == false)
             return;
 
         // Touch no celular. A posição do dedo em UI continua livre para clicar nos botões.
