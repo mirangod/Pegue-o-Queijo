@@ -62,4 +62,9 @@ public class SelecaoDeFase : MonoBehaviour
     {
         desbloqueada = valor;
     }
+
+    private void OnMouseDown()
+    {
+        AoSelecionarFase();
+    }
 }
