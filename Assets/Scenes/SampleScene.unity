@@ -687,9 +687,21 @@ PrefabInstance:
       propertyPath: speed
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 7327550602930064265, guid: 7812c41dc945fc448a84cef998d59e13, type: 3}
+      propertyPath: jumpForce
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 7327550602930064265, guid: 7812c41dc945fc448a84cef998d59e13, type: 3}
+      propertyPath: jumpHoldForce
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 7375728759621555538, guid: 7812c41dc945fc448a84cef998d59e13, type: 3}
       propertyPath: m_Name
       value: Felix
+      objectReference: {fileID: 0}
+    - target: {fileID: 7650883655238735559, guid: 7812c41dc945fc448a84cef998d59e13, type: 3}
+      propertyPath: m_GravityScale
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

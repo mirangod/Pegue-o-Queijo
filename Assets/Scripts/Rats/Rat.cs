@@ -12,16 +12,19 @@ public class Rat : MonoBehaviour
     [SerializeField, Min(0f)] private float maxJumpHoldTime = 0.25f;
     [SerializeField, Min(0f)] private float jumpHoldForce = 12f;
     [SerializeField, Range(0f, 1f)] private float jumpCutMultiplier = 0.5f;
+    [SerializeField] private string autoBounceTag = "Bounceable";
 
     public float move;
 
     private bool isGrounded;
     private bool jumpHeld;
     private float jumpHoldTimer;
+    private Collider2D ratCollider;
 
     protected virtual void Awake()
     {
         rig = GetComponent<Rigidbody2D>();
+        ratCollider = GetComponent<Collider2D>();
     }
 
     public void MoveLeft()
@@ -82,9 +85,25 @@ public class Rat : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
+        if (rig == null || ratCollider == null)
+            return;
+
         for (int i = 0; i < collision.contactCount; i++)
         {
-            if (collision.GetContact(i).normal.y > 0.5f)
+            ContactPoint2D contact = collision.GetContact(i);
+            bool landedOnTop = contact.normal.y > 0.5f && rig.velocity.y <= 0f;
+
+            if (landedOnTop && collision.collider.tag == autoBounceTag)
+            {
+                // O objeto não precisa de script: a tag no collider dispara o pulo do rato.
+                rig.velocity = new Vector2(rig.velocity.x, jumpForce);
+                jumpHeld = false;
+                jumpHoldTimer = 0f;
+                isGrounded = false;
+                return;
+            }
+
+            if (landedOnTop)
             {
                 isGrounded = true;
                 return;
