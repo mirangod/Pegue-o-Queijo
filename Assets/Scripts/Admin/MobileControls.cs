@@ -29,28 +29,21 @@ public class MobileControls : MonoBehaviour, IPointerDownHandler, IPointerUpHand
                 rat.MoveRight();
                 break;
             case "Jump Button":
-                rat.Jump();
+                rat.JumpPressed();
                 break;
         }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        switch (player.name)
+        switch (gameObject.name)
         {
-            case "Felix":
-                player.GetComponent<Felix>().StopMoving();
+            case "Left Button":
+            case "Right Button":
+                rat.StopMoving();
                 break;
-            case "Luna":
-                //player.GetComponent<Luna>().StopMoving();
-                break;
-            case "Bandit":
-                //player.GetComponent<Bandit>().StopMoving();
-                break;
-            default:
-                Debug.Log("Player não encontrado");
+            case "Jump Button":
+                rat.JumpReleased();
                 break;
         }
     }
