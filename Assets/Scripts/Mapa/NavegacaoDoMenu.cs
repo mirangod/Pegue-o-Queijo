@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 /// <summary>Use no botão Jogar do menu para abrir a cena do mapa.</summary>
 public class NavegacaoDoMenu : MonoBehaviour
 {
-    [SerializeField] private string cenaDoMapa = "WorldSelection";
+    [SerializeField] private string cenaDoMapa = "World";
 
     public void Jogar()
     {

@@ -12,7 +12,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private GameObject creditsPanel;
 
     [Header("Cena aberta pelo botão Jogar")]
-    [SerializeField] private string worldSelectionSceneName = "WorldSelection";
+    [SerializeField] private string worldSelectionSceneName = "World";
 
     public void Play()
     {

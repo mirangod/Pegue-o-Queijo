@@ -9,21 +9,31 @@ public class SelecaoDeFase : MonoBehaviour
     [SerializeField] private string nomeDaFase = "Fase 1";
     [SerializeField] private string nomeDaCena;
     [SerializeField] private bool desbloqueada = true;
+    [SerializeField] private bool faseDeQueijo;
     [SerializeField] private GameObject painelDeFase;
     [SerializeField] private TMP_Text textoDaFase;
     [SerializeField] private Button botaoJogar;
     [SerializeField] private Button botaoFechar;
 
     private static string cenaSelecionada;
+    private static bool faseSelecionadaDeQueijo;
+    private static Button botaoJogarRegistrado;
+    private static Button botaoFecharRegistrado;
 
     private void Awake()
     {
         if (painelDeFase != null)
             painelDeFase.SetActive(false);
-        if (botaoJogar != null)
+        if (botaoJogar != null && botaoJogarRegistrado != botaoJogar)
+        {
             botaoJogar.onClick.AddListener(IniciarFaseSelecionada);
-        if (botaoFechar != null)
+            botaoJogarRegistrado = botaoJogar;
+        }
+        if (botaoFechar != null && botaoFecharRegistrado != botaoFechar)
+        {
             botaoFechar.onClick.AddListener(FecharPainel);
+            botaoFecharRegistrado = botaoFechar;
+        }
     }
 
     public void AoSelecionarFase()
@@ -32,6 +42,7 @@ public class SelecaoDeFase : MonoBehaviour
             return;
 
         cenaSelecionada = nomeDaCena;
+        faseSelecionadaDeQueijo = faseDeQueijo;
         if (textoDaFase != null)
             textoDaFase.text = nomeDaFase;
         if (painelDeFase != null)
@@ -77,6 +88,7 @@ public class SelecaoDeFase : MonoBehaviour
             return;
         }
 
+        LevelFlowController.SetObjectiveForNextLevel(faseSelecionadaDeQueijo);
         SceneManager.LoadScene(cenaSelecionada);
     }
 

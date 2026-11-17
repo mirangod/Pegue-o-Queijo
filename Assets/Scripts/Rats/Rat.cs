@@ -244,6 +244,20 @@ public class Rat : MonoBehaviour
             nearest.Interact(this);
     }
 
+    public void FreezeForVictory()
+    {
+        move = 0f;
+        jumpHeld = false;
+        leftPointers.Clear();
+        rightPointers.Clear();
+
+        if (rig != null)
+        {
+            rig.velocity = Vector2.zero;
+            rig.simulated = false;
+        }
+    }
+
     public Vector3 GetBackOffset(Vector2 offset)
     {
         return new Vector3(-facingDirection * Mathf.Abs(offset.x), offset.y, 0f);
