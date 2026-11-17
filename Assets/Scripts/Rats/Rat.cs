@@ -12,6 +12,15 @@ public class Rat : MonoBehaviour
     [SerializeField, Min(0f)] private float jumpHoldForce = 12f;
     [SerializeField, Range(0f, 1f)] private float jumpCutMultiplier = 0.5f;
     [SerializeField] private string autoBounceTag = "Bounceable";
+    [Header("Queijo nas costas")]
+    [SerializeField, Min(0.01f)] private float queijoMassMultiplier = 2f;
+    [SerializeField, Range(0.1f, 1f)] private float queijoJumpMultiplier = 0.65f;
+    [SerializeField, Range(0.1f, 1f)] private float queijoJumpHoldMultiplier = 0.65f;
+    [SerializeField, Min(0f)] private float queijoAcceleration = 250f;
+    [SerializeField, Min(0f)] private float queijoTurnAcceleration = 80f;
+    [SerializeField, Min(0f)] private float queijoStopAcceleration = 160f;
+    [SerializeField, Min(0f)] private float interactionRange = 1.5f;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     public float move;
 
@@ -19,6 +28,9 @@ public class Rat : MonoBehaviour
     private bool jumpHeld;
     private float jumpHoldTimer;
     private Collider2D ratCollider;
+    private float massaOriginal = 1f;
+    private bool carregandoQueijo;
+    private int facingDirection = 1;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<int> leftPointers = new HashSet<int>();
     private readonly HashSet<int> rightPointers = new HashSet<int>();
@@ -27,6 +39,23 @@ public class Rat : MonoBehaviour
     {
         rig = GetComponent<Rigidbody2D>();
         ratCollider = GetComponent<Collider2D>();
+        if (rig != null)
+            massaOriginal = rig.mass;
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public bool CarregandoQueijo => carregandoQueijo;
+    public int FacingDirection => facingDirection;
+
+    public bool TryCarryCheese()
+    {
+        if (carregandoQueijo || rig == null)
+            return false;
+
+        carregandoQueijo = true;
+        rig.mass = massaOriginal * queijoMassMultiplier;
+        return true;
     }
 
     public void MoveLeft()
@@ -84,7 +113,7 @@ public class Rat : MonoBehaviour
         isGrounded = false;
         jumpHeld = true;
         jumpHoldTimer = 0f;
-        rig.velocity = new Vector2(rig.velocity.x, jumpForce);
+        rig.velocity = new Vector2(rig.velocity.x, GetJumpForce());
     }
 
     public void JumpReleased()
@@ -101,14 +130,40 @@ public class Rat : MonoBehaviour
         if (rig == null)
             return;
 
-        rig.velocity = new Vector2(move * speed, rig.velocity.y);
+        if (move != 0f)
+        {
+            facingDirection = move < 0f ? -1 : 1;
+            if (spriteRenderer != null)
+                spriteRenderer.flipX = facingDirection < 0;
+        }
+
+        float targetSpeed = move * speed;
+        if (!carregandoQueijo)
+        {
+            rig.velocity = new Vector2(targetSpeed, rig.velocity.y);
+        }
+        else
+        {
+            float acceleration = targetSpeed == 0f
+                ? queijoStopAcceleration
+                : rig.velocity.x * targetSpeed < 0f
+                    ? queijoTurnAcceleration
+                    : queijoAcceleration;
+            float horizontalSpeed = Mathf.MoveTowards(
+                rig.velocity.x,
+                targetSpeed,
+                acceleration * Time.fixedDeltaTime);
+            rig.velocity = new Vector2(horizontalSpeed, rig.velocity.y);
+        }
 
         if (!jumpHeld || rig.velocity.y <= 0f)
             return;
 
-        if (jumpHoldTimer < maxJumpHoldTime)
+        float holdTime = maxJumpHoldTime * (carregandoQueijo ? queijoJumpHoldMultiplier : 1f);
+        if (jumpHoldTimer < holdTime)
         {
-            rig.AddForce(Vector2.up * jumpHoldForce, ForceMode2D.Force);
+            float holdForce = jumpHoldForce * (carregandoQueijo ? queijoJumpMultiplier : 1f);
+            rig.AddForce(Vector2.up * holdForce, ForceMode2D.Force);
             jumpHoldTimer += Time.fixedDeltaTime;
         }
         else
@@ -130,7 +185,7 @@ public class Rat : MonoBehaviour
             if (landedOnTop && collision.collider.tag == autoBounceTag)
             {
                 // O objeto não precisa de script: a tag no collider dispara o pulo do rato.
-                rig.velocity = new Vector2(rig.velocity.x, jumpForce);
+                rig.velocity = new Vector2(rig.velocity.x, GetJumpForce());
                 jumpHeld = false;
                 jumpHoldTimer = 0f;
                 groundColliders.Remove(collision.collider);
@@ -160,5 +215,42 @@ public class Rat : MonoBehaviour
         move = 0;
         leftPointers.Clear();
         rightPointers.Clear();
+    }
+
+    public void Interact()
+    {
+        if (carregandoQueijo)
+            return;
+
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, interactionRange);
+        Interactable nearest = null;
+        float nearestDistance = float.PositiveInfinity;
+
+        foreach (Collider2D nearbyCollider in nearbyColliders)
+        {
+            Interactable candidate = nearbyCollider.GetComponentInParent<Interactable>();
+            if (candidate == null || !candidate.CanInteract(this))
+                continue;
+
+            float distance = ((Vector2)candidate.transform.position - (Vector2)transform.position).sqrMagnitude;
+            if (distance < nearestDistance)
+            {
+                nearest = candidate;
+                nearestDistance = distance;
+            }
+        }
+
+        if (nearest != null)
+            nearest.Interact(this);
+    }
+
+    public Vector3 GetBackOffset(Vector2 offset)
+    {
+        return new Vector3(-facingDirection * Mathf.Abs(offset.x), offset.y, 0f);
+    }
+
+    private float GetJumpForce()
+    {
+        return jumpForce * (carregandoQueijo ? queijoJumpMultiplier : 1f);
     }
 }

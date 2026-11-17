@@ -36,6 +36,9 @@ public class MobileControls : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             case "Jump Button":
                 rat.JumpPressed();
                 break;
+            case "Interact Button":
+                rat.Interact();
+                break;
         }
     }
 
