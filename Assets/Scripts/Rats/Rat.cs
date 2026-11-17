@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,6 +19,9 @@ public class Rat : MonoBehaviour
     private bool jumpHeld;
     private float jumpHoldTimer;
     private Collider2D ratCollider;
+    private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
+    private readonly HashSet<int> leftPointers = new HashSet<int>();
+    private readonly HashSet<int> rightPointers = new HashSet<int>();
 
     protected virtual void Awake()
     {
@@ -39,6 +41,33 @@ public class Rat : MonoBehaviour
         Debug.Log("Moving right");
 
         move = 1;
+    }
+
+    /// <summary>Atualiza a entrada de um botão direcional, mantendo outros dedos pressionados.</summary>
+    public void SetMoveInput(int direction, int pointerId, bool pressed)
+    {
+        HashSet<int> pointers = direction < 0 ? leftPointers : rightPointers;
+        if (pressed)
+            pointers.Add(pointerId);
+        else
+            pointers.Remove(pointerId);
+
+        UpdateMoveFromPointers();
+    }
+
+    public void ClearMoveInput(int direction)
+    {
+        (direction < 0 ? leftPointers : rightPointers).Clear();
+        UpdateMoveFromPointers();
+    }
+
+    private void UpdateMoveFromPointers()
+    {
+        move = leftPointers.Count > 0 && rightPointers.Count > 0
+            ? 0f
+            : leftPointers.Count > 0 ? -1f
+            : rightPointers.Count > 0 ? 1f
+            : 0f;
     }
 
     public void Jump()
@@ -69,7 +98,12 @@ public class Rat : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        if (!jumpHeld || rig == null || rig.velocity.y <= 0f)
+        if (rig == null)
+            return;
+
+        rig.velocity = new Vector2(move * speed, rig.velocity.y);
+
+        if (!jumpHeld || rig.velocity.y <= 0f)
             return;
 
         if (jumpHoldTimer < maxJumpHoldTime)
@@ -99,12 +133,14 @@ public class Rat : MonoBehaviour
                 rig.velocity = new Vector2(rig.velocity.x, jumpForce);
                 jumpHeld = false;
                 jumpHoldTimer = 0f;
+                groundColliders.Remove(collision.collider);
                 isGrounded = false;
                 return;
             }
 
             if (landedOnTop)
             {
+                groundColliders.Add(collision.collider);
                 isGrounded = true;
                 return;
             }
@@ -113,7 +149,8 @@ public class Rat : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        isGrounded = false;
+        groundColliders.Remove(collision.collider);
+        isGrounded = groundColliders.Count > 0;
     }
 
     public void StopMoving()
@@ -121,5 +158,7 @@ public class Rat : MonoBehaviour
         Debug.Log("Parou de andar");
 
         move = 0;
+        leftPointers.Clear();
+        rightPointers.Clear();
     }
 }
