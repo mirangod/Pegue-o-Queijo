@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Rat Admin
   - Arrastar
+  - Bounceable
   layers:
   - Default
   - TransparentFX

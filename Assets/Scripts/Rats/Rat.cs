@@ -12,13 +12,13 @@ public class Rat : MonoBehaviour
     [SerializeField, Min(0f)] private float jumpHoldForce = 12f;
     [SerializeField, Range(0f, 1f)] private float jumpCutMultiplier = 0.5f;
     [SerializeField] private string autoBounceTag = "Bounceable";
-    [Header("Queijo nas costas")]
-    [SerializeField, Min(0.01f)] private float queijoMassMultiplier = 2f;
-    [SerializeField, Range(0.1f, 1f)] private float queijoJumpMultiplier = 0.65f;
-    [SerializeField, Range(0.1f, 1f)] private float queijoJumpHoldMultiplier = 0.65f;
-    [SerializeField, Min(0f)] private float queijoAcceleration = 250f;
-    [SerializeField, Min(0f)] private float queijoTurnAcceleration = 80f;
-    [SerializeField, Min(0f)] private float queijoStopAcceleration = 160f;
+    [Header("Objeto carregado")]
+    [SerializeField, Min(0.01f)] private float itemMassMultiplier = 2f;
+    [SerializeField, Range(0.1f, 1f)] private float itemJumpMultiplier = 0.65f;
+    [SerializeField, Range(0.1f, 1f)] private float itemJumpHoldMultiplier = 0.65f;
+    [SerializeField, Min(0f)] private float itemAcceleration = 250f;
+    [SerializeField, Min(0f)] private float itemTurnAcceleration = 80f;
+    [SerializeField, Min(0f)] private float itemStopAcceleration = 160f;
     [SerializeField, Min(0f)] private float interactionRange = 1.5f;
     [SerializeField] private SpriteRenderer spriteRenderer;
 
@@ -29,7 +29,7 @@ public class Rat : MonoBehaviour
     private float jumpHoldTimer;
     private Collider2D ratCollider;
     private float massaOriginal = 1f;
-    private bool carregandoQueijo;
+    private CarryableInteractable objetoCarregado;
     private int facingDirection = 1;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<int> leftPointers = new HashSet<int>();
@@ -45,17 +45,32 @@ public class Rat : MonoBehaviour
             spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public bool CarregandoQueijo => carregandoQueijo;
+    public bool CarregandoQueijo => objetoCarregado is CheeseInteractable;
+    public bool CarregandoAlgo => objetoCarregado != null;
+    public bool PodeCarregarObjeto => objetoCarregado == null && rig != null;
     public int FacingDirection => facingDirection;
+    public Vector2 CurrentVelocity => rig != null ? rig.velocity : Vector2.zero;
 
-    public bool TryCarryCheese()
+    public bool TryCarryObject(CarryableInteractable objeto)
     {
-        if (carregandoQueijo || rig == null)
+        if (!PodeCarregarObjeto || objeto == null || !objeto.AttachToRat(this))
             return false;
 
-        carregandoQueijo = true;
-        rig.mass = massaOriginal * queijoMassMultiplier;
+        objetoCarregado = objeto;
+        rig.mass = massaOriginal * itemMassMultiplier;
         return true;
+    }
+
+    public void DropCarriedObject()
+    {
+        if (objetoCarregado == null)
+            return;
+
+        CarryableInteractable objeto = objetoCarregado;
+        objetoCarregado = null;
+        if (rig != null)
+            rig.mass = massaOriginal;
+        objeto.DropFromRat(this);
     }
 
     public void MoveLeft()
@@ -138,17 +153,17 @@ public class Rat : MonoBehaviour
         }
 
         float targetSpeed = move * speed;
-        if (!carregandoQueijo)
+        if (!CarregandoAlgo)
         {
             rig.velocity = new Vector2(targetSpeed, rig.velocity.y);
         }
         else
         {
             float acceleration = targetSpeed == 0f
-                ? queijoStopAcceleration
+                ? itemStopAcceleration
                 : rig.velocity.x * targetSpeed < 0f
-                    ? queijoTurnAcceleration
-                    : queijoAcceleration;
+                    ? itemTurnAcceleration
+                    : itemAcceleration;
             float horizontalSpeed = Mathf.MoveTowards(
                 rig.velocity.x,
                 targetSpeed,
@@ -159,10 +174,10 @@ public class Rat : MonoBehaviour
         if (!jumpHeld || rig.velocity.y <= 0f)
             return;
 
-        float holdTime = maxJumpHoldTime * (carregandoQueijo ? queijoJumpHoldMultiplier : 1f);
+        float holdTime = maxJumpHoldTime * (CarregandoAlgo ? itemJumpHoldMultiplier : 1f);
         if (jumpHoldTimer < holdTime)
         {
-            float holdForce = jumpHoldForce * (carregandoQueijo ? queijoJumpMultiplier : 1f);
+            float holdForce = jumpHoldForce * (CarregandoAlgo ? itemJumpMultiplier : 1f);
             rig.AddForce(Vector2.up * holdForce, ForceMode2D.Force);
             jumpHoldTimer += Time.fixedDeltaTime;
         }
@@ -182,9 +197,17 @@ public class Rat : MonoBehaviour
             ContactPoint2D contact = collision.GetContact(i);
             bool landedOnTop = contact.normal.y > 0.5f && rig.velocity.y <= 0f;
 
-            if (landedOnTop && collision.collider.tag == autoBounceTag)
+            if (landedOnTop && HasBounceableTag(collision.collider))
             {
-                // O objeto não precisa de script: a tag no collider dispara o pulo do rato.
+                Enemy enemy = collision.collider.GetComponentInParent<Enemy>();
+                if (enemy != null)
+                    enemy.TakeDamage(1);
+
+                BreakableObject breakable = collision.collider.GetComponentInParent<BreakableObject>();
+                if (breakable != null)
+                    breakable.Break();
+
+                // Todo objeto com a tag Bounceable lança o rato, mesmo sem efeito especial.
                 rig.velocity = new Vector2(rig.velocity.x, GetJumpForce());
                 jumpHeld = false;
                 jumpHoldTimer = 0f;
@@ -219,8 +242,11 @@ public class Rat : MonoBehaviour
 
     public void Interact()
     {
-        if (carregandoQueijo)
+        if (CarregandoAlgo)
+        {
+            DropCarriedObject();
             return;
+        }
 
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, interactionRange);
         Interactable nearest = null;
@@ -265,6 +291,17 @@ public class Rat : MonoBehaviour
 
     private float GetJumpForce()
     {
-        return jumpForce * (carregandoQueijo ? queijoJumpMultiplier : 1f);
+        return jumpForce * (CarregandoAlgo ? itemJumpMultiplier : 1f);
+    }
+
+    private bool HasBounceableTag(Collider2D collider)
+    {
+        for (Transform current = collider.transform; current != null; current = current.parent)
+        {
+            if (current.CompareTag(autoBounceTag))
+                return true;
+        }
+
+        return false;
     }
 }
