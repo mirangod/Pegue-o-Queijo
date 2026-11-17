@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : DamageDealer
 {
     [SerializeField, Min(1)] private int health = 1;
 

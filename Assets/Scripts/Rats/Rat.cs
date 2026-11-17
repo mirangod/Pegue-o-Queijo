@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Rat : MonoBehaviour
 {
@@ -21,6 +22,11 @@ public class Rat : MonoBehaviour
     [SerializeField, Min(0f)] private float itemStopAcceleration = 160f;
     [SerializeField, Min(0f)] private float interactionRange = 1.5f;
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [Header("Vida")]
+    [SerializeField, Min(1)] private int maxHealth = 3;
+    [SerializeField, Min(0f)] private float damageCooldown = 1f;
+    [SerializeField] private UnityEvent onHealthChanged = new UnityEvent();
+    [SerializeField] private UnityEvent onDeath = new UnityEvent();
 
     public float move;
 
@@ -31,6 +37,9 @@ public class Rat : MonoBehaviour
     private float massaOriginal = 1f;
     private CarryableInteractable objetoCarregado;
     private int facingDirection = 1;
+    private int currentHealth;
+    private float nextDamageTime;
+    private bool dead;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<int> leftPointers = new HashSet<int>();
     private readonly HashSet<int> rightPointers = new HashSet<int>();
@@ -43,8 +52,12 @@ public class Rat : MonoBehaviour
             massaOriginal = rig.mass;
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
+        currentHealth = maxHealth;
     }
 
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
+    public bool IsDead => dead;
     public bool CarregandoQueijo => objetoCarregado is CheeseInteractable;
     public bool CarregandoAlgo => objetoCarregado != null;
     public bool PodeCarregarObjeto => objetoCarregado == null && rig != null;
@@ -53,7 +66,7 @@ public class Rat : MonoBehaviour
 
     public bool TryCarryObject(CarryableInteractable objeto)
     {
-        if (!PodeCarregarObjeto || objeto == null || !objeto.AttachToRat(this))
+        if (dead || !PodeCarregarObjeto || objeto == null || !objeto.AttachToRat(this))
             return false;
 
         objetoCarregado = objeto;
@@ -75,6 +88,9 @@ public class Rat : MonoBehaviour
 
     public void MoveLeft()
     {
+        if (dead)
+            return;
+
         Debug.Log("Moving left");
 
         move = -1;
@@ -82,6 +98,9 @@ public class Rat : MonoBehaviour
 
     public void MoveRight()
     {
+        if (dead)
+            return;
+
         Debug.Log("Moving right");
 
         move = 1;
@@ -90,6 +109,9 @@ public class Rat : MonoBehaviour
     /// <summary>Atualiza a entrada de um botão direcional, mantendo outros dedos pressionados.</summary>
     public void SetMoveInput(int direction, int pointerId, bool pressed)
     {
+        if (dead)
+            return;
+
         HashSet<int> pointers = direction < 0 ? leftPointers : rightPointers;
         if (pressed)
             pointers.Add(pointerId);
@@ -122,7 +144,7 @@ public class Rat : MonoBehaviour
 
     public void JumpPressed()
     {
-        if (rig == null || !isGrounded)
+        if (dead || rig == null || !isGrounded)
             return;
 
         isGrounded = false;
@@ -187,9 +209,19 @@ public class Rat : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        HandleDamage(collision.collider);
+    }
+
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (rig == null || ratCollider == null)
+        if (dead)
+            return;
+
+        HandleDamage(collision.collider);
+
+        if (dead || rig == null || ratCollider == null)
             return;
 
         for (int i = 0; i < collision.contactCount; i++)
@@ -231,6 +263,56 @@ public class Rat : MonoBehaviour
         isGrounded = groundColliders.Count > 0;
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        HandleDamage(other);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        HandleDamage(other);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (dead || damage <= 0 || Time.time < nextDamageTime)
+            return;
+
+        currentHealth = Mathf.Max(0, currentHealth - damage);
+        nextDamageTime = Time.time + damageCooldown;
+        onHealthChanged?.Invoke();
+
+        if (currentHealth == 0)
+            Die();
+    }
+
+    private void HandleDamage(Collider2D other)
+    {
+        if (dead || other == null)
+            return;
+
+        DamageDealer damageDealer = other.GetComponentInParent<DamageDealer>();
+        if (damageDealer != null)
+            TakeDamage(damageDealer.Damage);
+    }
+
+    private void Die()
+    {
+        dead = true;
+        move = 0f;
+        jumpHeld = false;
+        leftPointers.Clear();
+        rightPointers.Clear();
+
+        if (rig != null)
+        {
+            rig.velocity = Vector2.zero;
+            rig.simulated = false;
+        }
+
+        onDeath?.Invoke();
+    }
+
     public void StopMoving()
     {
         Debug.Log("Parou de andar");
@@ -242,6 +324,9 @@ public class Rat : MonoBehaviour
 
     public void Interact()
     {
+        if (dead)
+            return;
+
         if (CarregandoAlgo)
         {
             DropCarriedObject();
