@@ -603,8 +603,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nomeDaFase: Fase 2
-  nomeDaCena: SampleScene
+  nomeDaCena: Gameplay - Queijo
   desbloqueada: 1
+  faseDeQueijo: 1
   painelDeFase: {fileID: 623959971}
   textoDaFase: {fileID: 815253341}
   botaoJogar: {fileID: 1379589250}
@@ -979,8 +980,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nomeDaFase: Fase 1
-  nomeDaCena: SampleScene
+  nomeDaCena: Gameplay - Chegada
   desbloqueada: 1
+  faseDeQueijo: 0
   painelDeFase: {fileID: 623959971}
   textoDaFase: {fileID: 815253341}
   botaoJogar: {fileID: 1379589250}

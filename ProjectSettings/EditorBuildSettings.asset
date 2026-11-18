@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/Scenes/World.unity
     guid: b769e3bc98296a8479ce4b6656353c32
   - enabled: 1
+    path: Assets/Scenes/Gameplay - Chegada.unity
+    guid: 3c41cbdc4a6cca849805800ee5648b99
+  - enabled: 1
+    path: Assets/Scenes/Gameplay - Queijo.unity
+    guid: 364f732e98c32c840a81838e50efc896
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

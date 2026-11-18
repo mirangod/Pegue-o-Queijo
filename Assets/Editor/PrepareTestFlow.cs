@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+[InitializeOnLoad]
 public static class PrepareTestFlow
 {
     private const string GameplayFolder = "Assets/Gameplay";
@@ -15,6 +16,35 @@ public static class PrepareTestFlow
     private const string CheeseScenePath = "Assets/Scenes/Gameplay - Queijo.unity";
     private static Sprite pixelSprite;
     private static Font uiFont;
+    private const string GenerateOnceMarker = ".codex-generate-test-flow.once";
+
+    static PrepareTestFlow()
+    {
+        EditorApplication.delayCall += GenerateIfRequested;
+    }
+
+    private static void GenerateIfRequested()
+    {
+        string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+        string markerPath = Path.Combine(projectRoot, GenerateOnceMarker);
+        if (!File.Exists(markerPath) || SessionState.GetBool("PrepareTestFlow.GenerationRunning", false))
+            return;
+
+        SessionState.SetBool("PrepareTestFlow.GenerationRunning", true);
+        try
+        {
+            Generate();
+            File.Delete(markerPath);
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogException(exception);
+        }
+        finally
+        {
+            SessionState.SetBool("PrepareTestFlow.GenerationRunning", false);
+        }
+    }
 
     [MenuItem("Pegue o Queijo/Preparar fluxo jogável")]
     public static void Generate()

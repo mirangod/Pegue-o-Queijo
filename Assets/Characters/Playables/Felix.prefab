@@ -27,13 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7375728759621555538}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6677597022652289886
 SpriteRenderer:
@@ -99,8 +99,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6763fb47af5625f4fa3c06a7a68db0f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 50
-  jumpForce: 5
+  speed: 7
+  jumpForce: 7.5
+  maxJumpHoldTime: 0.25
+  jumpHoldForce: 12
+  jumpCutMultiplier: 0.5
+  autoBounceTag: Bounceable
+  itemMassMultiplier: 2
+  itemJumpMultiplier: 0.65
+  itemJumpHoldMultiplier: 0.65
+  itemAcceleration: 40
+  itemTurnAcceleration: 20
+  itemStopAcceleration: 30
+  interactionRange: 1.5
+  spriteRenderer: {fileID: 0}
+  maxHealth: 3
+  damageCooldown: 1
+  onHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
   move: 0
 --- !u!50 &7650883655238735559
 Rigidbody2D:
@@ -119,6 +139,12 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -133,6 +159,25 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
