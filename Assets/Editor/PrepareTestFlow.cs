@@ -95,7 +95,6 @@ public static class PrepareTestFlow
         }
 
         CreateCanvas(player.GetComponent<Rat>(), requiresCheese);
-        CreateLevelController(requiresCheese);
         EditorSceneManager.SaveScene(scene, scenePath);
     }
 
