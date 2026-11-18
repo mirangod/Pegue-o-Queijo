@@ -9,8 +9,11 @@ public class LevelFlowController : MonoBehaviour
 
     [SerializeField] private bool requiresCheese;
     [SerializeField] private GameObject victoryPanel;
+    [SerializeField] private GameObject defeatPanel;
     [SerializeField] private Button playAgainButton;
     [SerializeField] private Button backToSelectionButton;
+    [SerializeField] private Button defeatPlayAgainButton;
+    [SerializeField] private Button defeatBackToSelectionButton;
     [SerializeField] private string selectionSceneName = "World";
 
     private bool completed;
@@ -23,18 +26,17 @@ public class LevelFlowController : MonoBehaviour
 
         if (victoryPanel != null)
             victoryPanel.SetActive(false);
+        if (defeatPanel != null)
+            defeatPanel.SetActive(false);
 
-        if (playAgainButton != null)
-        {
-            playAgainButton.onClick.RemoveListener(PlayAgain);
-            playAgainButton.onClick.AddListener(PlayAgain);
-        }
+        RegisterButton(playAgainButton, PlayAgain);
+        RegisterButton(backToSelectionButton, BackToSelection);
+        RegisterButton(defeatPlayAgainButton, PlayAgain);
+        RegisterButton(defeatBackToSelectionButton, BackToSelection);
 
-        if (backToSelectionButton != null)
-        {
-            backToSelectionButton.onClick.RemoveListener(BackToSelection);
-            backToSelectionButton.onClick.AddListener(BackToSelection);
-        }
+        Rat rat = FindObjectOfType<Rat>();
+        if (rat != null)
+            rat.RegisterDeathListener(ShowDefeat);
     }
 
     public static void SetObjectiveForNextLevel(bool objectiveRequiresCheese)
@@ -68,6 +70,30 @@ public class LevelFlowController : MonoBehaviour
         completed = true;
         rat.FreezeForVictory();
         victoryPanel.SetActive(true);
+    }
+
+    private void ShowDefeat()
+    {
+        if (completed)
+            return;
+
+        completed = true;
+        if (defeatPanel == null)
+        {
+            Debug.LogError("Associe o painel de derrota ao LevelFlowController.", this);
+            return;
+        }
+
+        defeatPanel.SetActive(true);
+    }
+
+    private void RegisterButton(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if (button == null)
+            return;
+
+        button.onClick.RemoveListener(action);
+        button.onClick.AddListener(action);
     }
 
     public void PlayAgain()

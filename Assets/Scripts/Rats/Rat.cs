@@ -286,6 +286,12 @@ public class Rat : MonoBehaviour
             Die();
     }
 
+    public void RegisterDeathListener(UnityAction listener)
+    {
+        if (listener != null)
+            onDeath.AddListener(listener);
+    }
+
     private void HandleDamage(Collider2D other)
     {
         if (dead || other == null)
