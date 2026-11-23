@@ -280,7 +280,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10.9895, y: 3.3813}
+  m_AnchoredPosition: {x: 10.989502, y: 3.3812866}
   m_SizeDelta: {x: -82.8438, y: -71.009}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &623959973
@@ -434,8 +434,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraDoMapa: {fileID: 1130864219}
-  limiteMinimo: {x: -10, y: -10}
-  limiteMaximo: {x: 10, y: 10}
+  limiteMinimo: {x: -13, y: -10}
+  limiteMaximo: {x: 15, y: 7}
   canMove: 1
 --- !u!1 &815253339
 GameObject:
@@ -1175,7 +1175,7 @@ Transform:
   m_GameObject: {fileID: 1130864217}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: -6.1, y: -4.4, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1239,7 +1239,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 554cbc4b7829f324eaf0a1ae74477655, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 250ec70c3199bc248844763e79cd25e9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1260,7 +1260,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1, y: -1.7, z: 0}
-  m_LocalScale: {x: 5.1649, y: 5.1649, z: 5.1649}
+  m_LocalScale: {x: 3.7405753, y: 3.7405753, z: 3.7405753}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
