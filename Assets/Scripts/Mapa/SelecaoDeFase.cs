@@ -21,6 +21,7 @@ public class SelecaoDeFase : MonoBehaviour
     [SerializeField] private Button botaoFechar;
 
     private static string cenaSelecionada;
+    private static string idDaFaseSelecionada;
     private static bool faseSelecionadaDeQueijo;
     private static Button botaoJogarRegistrado;
     private static Button botaoFecharRegistrado;
@@ -47,6 +48,7 @@ public class SelecaoDeFase : MonoBehaviour
             return;
 
         cenaSelecionada = nomeDaCena;
+        idDaFaseSelecionada = idDaFase;
         faseSelecionadaDeQueijo = faseDeQueijo;
         if (textoDaFase != null)
             textoDaFase.text = nomeDaFase;
@@ -93,7 +95,7 @@ public class SelecaoDeFase : MonoBehaviour
             return;
         }
 
-        LevelFlowController.SetObjectiveForNextLevel(faseSelecionadaDeQueijo, idDaFase);
+        LevelFlowController.SetObjectiveForNextLevel(faseSelecionadaDeQueijo, idDaFaseSelecionada);
         SceneManager.LoadScene(cenaSelecionada);
     }
 
