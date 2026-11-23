@@ -27,6 +27,11 @@ public class Rat : MonoBehaviour
     [SerializeField, Min(0f)] private float damageCooldown = 1f;
     [SerializeField] private UnityEvent onHealthChanged = new UnityEvent();
     [SerializeField] private UnityEvent onDeath = new UnityEvent();
+    [SerializeField, Min(0.01f)] private float hitStunDuration = 0.25f;
+    [SerializeField, Min(0f)] private float hitKnockbackForce = 3.5f;
+    [SerializeField, Min(0f)] private float hitKnockbackUpwardForce = 1.2f;
+    [SerializeField, Min(0.01f)] private float hitFlashDuration = 0.48f;
+    [SerializeField, Min(0.01f)] private float hitFlashInterval = 0.08f;
 
     public float move;
 
@@ -40,6 +45,10 @@ public class Rat : MonoBehaviour
     private int currentHealth;
     private float nextDamageTime;
     private bool dead;
+    private bool movementLocked;
+    private float movementUnlockTime;
+    private Color originalSpriteColor = Color.white;
+    private Coroutine hitFlashCoroutine;
     private readonly HashSet<Collider2D> groundColliders = new HashSet<Collider2D>();
     private readonly HashSet<int> leftPointers = new HashSet<int>();
     private readonly HashSet<int> rightPointers = new HashSet<int>();
@@ -52,6 +61,8 @@ public class Rat : MonoBehaviour
             massaOriginal = rig.mass;
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+            originalSpriteColor = spriteRenderer.color;
         currentHealth = maxHealth;
     }
 
@@ -88,7 +99,7 @@ public class Rat : MonoBehaviour
 
     public void MoveLeft()
     {
-        if (dead)
+        if (dead || movementLocked)
             return;
 
         Debug.Log("Moving left");
@@ -98,7 +109,7 @@ public class Rat : MonoBehaviour
 
     public void MoveRight()
     {
-        if (dead)
+        if (dead || movementLocked)
             return;
 
         Debug.Log("Moving right");
@@ -109,7 +120,7 @@ public class Rat : MonoBehaviour
     /// <summary>Atualiza a entrada de um botão direcional, mantendo outros dedos pressionados.</summary>
     public void SetMoveInput(int direction, int pointerId, bool pressed)
     {
-        if (dead)
+        if (dead || movementLocked)
             return;
 
         HashSet<int> pointers = direction < 0 ? leftPointers : rightPointers;
@@ -144,7 +155,7 @@ public class Rat : MonoBehaviour
 
     public void JumpPressed()
     {
-        if (dead || rig == null || !isGrounded)
+        if (dead || movementLocked || rig == null || !isGrounded)
             return;
 
         isGrounded = false;
@@ -166,6 +177,13 @@ public class Rat : MonoBehaviour
     {
         if (rig == null)
             return;
+
+        if (movementLocked)
+        {
+            if (Time.time < movementUnlockTime)
+                return;
+            movementLocked = false;
+        }
 
         if (move != 0f)
         {
@@ -275,6 +293,11 @@ public class Rat : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        TakeDamage(damage, transform.position, false);
+    }
+
+    private void TakeDamage(int damage, Vector2 sourcePosition, bool applyKnockback)
+    {
         if (dead || damage <= 0 || Time.time < nextDamageTime)
             return;
 
@@ -282,8 +305,52 @@ public class Rat : MonoBehaviour
         nextDamageTime = Time.time + damageCooldown;
         onHealthChanged?.Invoke();
 
+        if (hitFlashCoroutine != null)
+            StopCoroutine(hitFlashCoroutine);
+        hitFlashCoroutine = StartCoroutine(FlashAfterDamage());
+        if (currentHealth > 0)
+        {
+            if (applyKnockback)
+                ApplyDamageKnockback(sourcePosition);
+        }
+
         if (currentHealth == 0)
             Die();
+    }
+
+    private System.Collections.IEnumerator FlashAfterDamage()
+    {
+        if (spriteRenderer == null)
+            yield break;
+
+        float endTime = Time.time + hitFlashDuration;
+        bool white = true;
+        while (Time.time < endTime)
+        {
+            spriteRenderer.color = white ? Color.white : originalSpriteColor;
+            white = !white;
+            yield return new WaitForSeconds(hitFlashInterval);
+        }
+
+        spriteRenderer.color = originalSpriteColor;
+        hitFlashCoroutine = null;
+    }
+
+    private void ApplyDamageKnockback(Vector2 sourcePosition)
+    {
+        if (rig == null) return;
+
+        float direction = transform.position.x >= sourcePosition.x ? 1f : -1f;
+        if (Mathf.Approximately(transform.position.x, sourcePosition.x))
+            direction = -facingDirection;
+
+        move = 0f;
+        leftPointers.Clear();
+        rightPointers.Clear();
+        jumpHeld = false;
+        movementLocked = true;
+        movementUnlockTime = Time.time + hitStunDuration;
+        rig.velocity = new Vector2(direction * hitKnockbackForce, Mathf.Max(rig.velocity.y, 0f) + hitKnockbackUpwardForce);
     }
 
     public void RegisterDeathListener(UnityAction listener)
@@ -299,7 +366,7 @@ public class Rat : MonoBehaviour
 
         DamageDealer damageDealer = other.GetComponentInParent<DamageDealer>();
         if (damageDealer != null)
-            TakeDamage(damageDealer.Damage);
+            TakeDamage(damageDealer.Damage, other.bounds.center, damageDealer is Enemy);
     }
 
     private void Die()
