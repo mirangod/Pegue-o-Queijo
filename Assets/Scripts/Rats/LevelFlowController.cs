@@ -6,8 +6,13 @@ public class LevelFlowController : MonoBehaviour
 {
     private static bool hasSelectedObjective;
     private static bool selectedObjectiveRequiresCheese;
+    private static string selectedLevelId;
 
     [SerializeField] private bool requiresCheese;
+    [Header("Fase e conquistas")]
+    [SerializeField] private string levelId;
+    [SerializeField, Range(1, 3)] private int quantidadeDeEstrelasDisponiveis = 1;
+    [SerializeField] private DesafioDeEstrela[] desafiosDeEstrela;
     [SerializeField] private GameObject victoryPanel;
     [SerializeField] private GameObject defeatPanel;
     [SerializeField] private Button playAgainButton;
@@ -18,11 +23,28 @@ public class LevelFlowController : MonoBehaviour
 
     private bool completed;
     private bool missingPanelReported;
+    private float tempoDecorrido;
+    private int moedasColetadas;
+    private bool objetivoSecretoConcluido;
+
+    private void OnValidate()
+    {
+        quantidadeDeEstrelasDisponiveis = Mathf.Clamp(quantidadeDeEstrelasDisponiveis, 1, 3);
+        int desafios = quantidadeDeEstrelasDisponiveis - 1;
+        if (desafiosDeEstrela == null) desafiosDeEstrela = new DesafioDeEstrela[desafios];
+        if (desafiosDeEstrela.Length != desafios) System.Array.Resize(ref desafiosDeEstrela, desafios);
+        for (int i = 0; i < desafiosDeEstrela.Length; i++)
+            if (desafiosDeEstrela[i] == null) desafiosDeEstrela[i] = new DesafioDeEstrela();
+    }
 
     private void Awake()
     {
         if (hasSelectedObjective)
             requiresCheese = selectedObjectiveRequiresCheese;
+        if (!string.IsNullOrEmpty(selectedLevelId))
+            levelId = selectedLevelId;
+        selectedLevelId = null;
+        hasSelectedObjective = false;
 
         if (victoryPanel != null)
             victoryPanel.SetActive(false);
@@ -39,11 +61,22 @@ public class LevelFlowController : MonoBehaviour
             rat.RegisterDeathListener(ShowDefeat);
     }
 
-    public static void SetObjectiveForNextLevel(bool objectiveRequiresCheese)
+    private void Update()
+    {
+        if (!completed) tempoDecorrido += Time.deltaTime;
+    }
+
+    public static void SetObjectiveForNextLevel(bool objectiveRequiresCheese, string id = null)
     {
         hasSelectedObjective = true;
         selectedObjectiveRequiresCheese = objectiveRequiresCheese;
+        selectedLevelId = id;
     }
+
+    public void RegistrarMoedaColetada() => moedasColetadas++;
+    public void RegistrarFlorColetada() => floresColetadas++;
+    public void ConcluirObjetivoSecreto() => objetivoSecretoConcluido = true;
+    private int floresColetadas;
 
     public void TryComplete(LevelGoalPoint point, Rat rat)
     {
@@ -68,6 +101,14 @@ public class LevelFlowController : MonoBehaviour
         }
 
         completed = true;
+        int estrelas = 1;
+        for (int i = 0; desafiosDeEstrela != null && i < desafiosDeEstrela.Length; i++)
+        {
+            if (desafiosDeEstrela[i] == null) continue;
+            if (desafiosDeEstrela[i].Concluido(tempoDecorrido, moedasColetadas, floresColetadas, objetivoSecretoConcluido))
+                estrelas++;
+        }
+        ProgressaoDeFases.RegistrarConclusao(levelId, estrelas);
         rat.FreezeForVictory();
         victoryPanel.SetActive(true);
     }

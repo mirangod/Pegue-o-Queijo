@@ -171,8 +171,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -215,8 +215,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -293,8 +293,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.392}
   m_RaycastTarget: 1
@@ -349,8 +349,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
@@ -369,8 +369,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
@@ -431,8 +431,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d5ea105c3634dc38eb712d397ea78a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   cameraDoMapa: {fileID: 1130864219}
   limiteMinimo: {x: -13, y: -10}
   limiteMaximo: {x: 15, y: 7}
@@ -484,8 +484,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -600,11 +600,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28503634c50c45c29d8f965c5599e8c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nomeDaFase: Fase 2
+  m_Name: ''
+  m_EditorClassIdentifier: ''
+  nomeDaFase: Fase 1-2
   nomeDaCena: Gameplay - Queijo
   desbloqueada: 1
+  idDaFase: 1-2
+  quantidadeDeCriterios: 1
+  exigirTodosOsCriterios: 1
+  criteriosDeDesbloqueio:
+  - tipo: 4
+    idDaFase: 1-1
+    quantidade: 1
   faseDeQueijo: 1
   painelDeFase: {fileID: 623959971}
   textoDaFase: {fileID: 815253341}
@@ -759,8 +766,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -858,6 +865,7 @@ GameObject:
   - component: {fileID: 903093449}
   - component: {fileID: 903093448}
   - component: {fileID: 903093447}
+  - component: {fileID: 1984412001}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -865,6 +873,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1984412001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 903093446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b6581bcb07f44b1a98f7fd33ce10d11, type: 3}
+  m_Name: ''
+  m_EditorClassIdentifier: ''
+  textoEstrelas: {fileID: 0}
+  textoMoedas: {fileID: 0}
+  textoFlores: {fileID: 0}
+  posicao: {x: 20, y: -20}
+  tamanho: {x: 190, y: 90}
 --- !u!114 &903093447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,8 +900,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
   m_BlockingMask:
@@ -892,8 +917,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
@@ -977,11 +1002,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28503634c50c45c29d8f965c5599e8c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nomeDaFase: Fase 1
+  m_Name: ''
+  m_EditorClassIdentifier: ''
+  nomeDaFase: Fase 1-1
   nomeDaCena: Gameplay - Chegada
   desbloqueada: 1
+  idDaFase: 1-1
+  quantidadeDeCriterios: 1
+  exigirTodosOsCriterios: 1
+  criteriosDeDesbloqueio:
+  - tipo: 0
+    idDaFase: ''
+    quantidade: 1
+  idDaFaseRequisito: ''
+  requisitoExigeConclusao: 1
+  estrelasNecessarias: 0
   faseDeQueijo: 0
   painelDeFase: {fileID: 623959971}
   textoDaFase: {fileID: 815253341}
@@ -1314,8 +1349,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -1358,8 +1393,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -1433,8 +1468,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ''
+  m_EditorClassIdentifier: ''
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1

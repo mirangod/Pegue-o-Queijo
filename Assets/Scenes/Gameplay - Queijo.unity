@@ -2533,6 +2533,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requiresCheese: 1
+  levelId: 1-2
+  quantidadeDeEstrelasDisponiveis: 1
+  desafiosDeEstrela: []
   victoryPanel: {fileID: 1512994261}
   defeatPanel: {fileID: 477015048}
   playAgainButton: {fileID: 863477302}
